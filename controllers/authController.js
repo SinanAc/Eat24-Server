@@ -5,23 +5,26 @@ const nodemailer = require("nodemailer");
 const sendgridTransport = require("nodemailer-sendgrid-transport");
 const jwt = require("jsonwebtoken");
 
+
 const User = require("../models/user");
 const Account = require("../models/account");
 const Seller = require("../models/seller");
+const { sendOtpEmail } = require("../otphandler/nodemailer")
+// const transporter = nodemailer.createTransport(
+//   sendgridTransport({
+//     auth: {
+//       api_key: process.env.SENDGRID_KEY,
+//     },
+//   })
+// );
 
-const transporter = nodemailer.createTransport(
-  sendgridTransport({
-    auth: {
-      api_key: process.env.SENDGRID_KEY,
-    },
-  })
-);
-
-exports.signupUser = (req, res, next) => {
+exports.signupUser = (req, res, next)  => {
   const errors = validationResult(req);
   console.log("============");
   console.log(req.body);
   console.log("============");
+
+
 
   if (!errors.isEmpty()) {
     const error = new Error("Validation Failed, Incorrect data entered.");
@@ -35,7 +38,7 @@ exports.signupUser = (req, res, next) => {
   const password = req.body.password;
   const role = req.body.role;
   let token;
-
+  //const otpResponse = await sendOtpEmail(email, name)
   if (role !== "ROLE_USER") {
     const error = new Error(
       "Signing up an user should have a role of ROLE_USER"
@@ -77,7 +80,6 @@ exports.signupUser = (req, res, next) => {
       // });
       res.status(201).json({
         message: "true",
-         // "User signed-up successfully, please verify your email before logging in.",
         userId: savedUser._id,
       });
     })
